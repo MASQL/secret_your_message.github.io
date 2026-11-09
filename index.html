@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECRET YOUR MESSAGE - White & Green Hacker Cryptography Lab</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        hacker: {
+                            bg: '#F4FBF7',
+                            card: '#FFFFFF',
+                            border: '#A7F3D0',
+                            borderDark: '#34D399',
+                            dark: '#022C22',
+                            green: '#059669',
+                            neon: '#00E676',
+                            lightGreen: '#ECFDF5',
+                            text: '#0F172A',
+                            subtext: '#475569'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;0,800;1,400&family=Inter:wght@300;400;600;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F4FBF7;
+            color: #0F172A;
+        }
+
+        .code-font {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        /* Hacker White-Green Card Aesthetic */
+        .hacker-card {
+            background: #FFFFFF;
+            border: 1px solid #A7F3D0;
+            box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hacker-card:hover {
+            border-color: #10B981;
+            box-shadow: 0 10px 30px -5px rgba(16, 185, 129, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Terminal Window Header Style */
+        .terminal-header {
+            background: #ECFDF5;
+            border-bottom: 1px solid #A7F3D0;
+        }
+
+        /* Neon Glow Button Effect */
+        .btn-neon-hacker {
+            background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+            color: #FFFFFF;
+        }
+
+        .btn-neon-hacker:hover {
+            background: linear-gradient(135deg, #047857 0%, #059669 100%);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.5);
+        }
+
+        .scramble-title {
+            color: #052C22;
+            text-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Custom Scrollbar Terminal Style */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F4FBF7;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #A7F3D0;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10B981;
+        }
+
+        /* Matrix Canvas Overlay */
+        #matrixCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.35;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative selection:bg-emerald-500 selection:text-white">
+
+    <!-- Header Navigation Sticky Terminal Style -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-emerald-200 px-4 py-3 sm:px-8 shadow-sm">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <button onclick="navigateTo('hero')" class="flex items-center space-x-3 group text-left focus:outline-none">
+                <div class="p-2 bg-emerald-600 rounded-lg group-hover:scale-105 transition-transform duration-300 text-white shadow-md shadow-emerald-500/20">
+                    <svg class="w-6 h-6 stroke-current" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <span class="font-extrabold text-lg sm:text-xl tracking-wider text-slate-900 code-font flex items-center space-x-1">
+                        <span class="text-emerald-600">&gt;</span>
+                        <span>SECRET YOUR MESSAGE</span>
+                    </span>
+                    <span class="block text-[10px] text-emerald-600 font-mono tracking-widest uppercase font-semibold">[ WHITE-GREEN HACKER LAB ]</span>
+                </div>
+            </button>
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <button onclick="navigateTo('select')" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-mono font-bold rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 transition-all flex items-center space-x-1.5 shadow-sm">
+                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+                    </svg>
+                    <span>PILIH KODE</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 z-10 relative">
+
+        <!-- VIEW 1: HERO VIEW (BERANDA DESKTOP DECODING ANIMATION) -->
+        <section id="heroView" class="py-12 sm:py-20 flex flex-col items-center justify-center text-center space-y-8 relative overflow-hidden">
+            <!-- Light Matrix Code Rain Canvas -->
+            <canvas id="matrixCanvas"></canvas>
+
+            <!-- Status Hacker Badge -->
+            <div class="relative z-10 inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-100 border border-emerald-400 text-emerald-900 text-xs sm:text-sm font-mono tracking-wide shadow-sm">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>SYSTEM ONLINE: Real-Time Encryption Engine</span>
+            </div>
+
+            <!-- Scrambled Animated Title Header -->
+            <div class="relative z-10 space-y-2">
+                <h1 id="scrambleHeader" onmouseenter="startScrambleAnimation()" class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight scramble-title code-font max-w-5xl leading-tight cursor-pointer select-none">
+                    SECRET YOUR MESSAGE
+                </h1>
+                <p class="text-xs font-mono text-emerald-700 tracking-widest">[ Dekripsi & Enkripsi Teks Kriptografi Sederhana ]</p>
+            </div>
+
+            <p class="relative z-10 text-base sm:text-xl text-slate-600 max-w-2xl font-normal leading-relaxed">
+                Kirim pesan rahasiamu melalui kode dan orang lain tidak dapat membacanya. Ubah teks biasa menjadi puluhan format sandi, angka basis, hingga visual mesin.
+            </p>
+
+            <!-- Main CTA Button -->
+            <div class="relative z-10 pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+                <button onclick="navigateTo('select')" class="w-full sm:w-auto px-9 py-4 rounded-xl btn-neon-hacker font-extrabold text-base sm:text-lg tracking-wider code-font transition-all transform hover:-translate-y-1 flex items-center justify-center space-x-3">
+                    <svg class="w-6 h-6 stroke-current" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    <span>BUAT PESAN</span>
+                </button>
+            </div>
+
+            <!-- Features Terminal Grid -->
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 w-full pt-16 max-w-5xl text-left">
+                <div class="hacker-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-4 border border-emerald-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2 code-font">15+ Metode Kode</h3>
+                    <p class="text-sm text-slate-600">Dukungan sandi klasik, basis biner, hex, Base64, Sandi Kotak, Morse, Caesar, hingga QR Code.</p>
+                </div>
+                <div class="hacker-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-4 border border-emerald-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2 code-font">Real-Time & Audio</h3>
+                    <p class="text-sm text-slate-600">Proses konversi langsung saat diketik, dilengkapi sinyal nada pemutar audio nada Morse otomatis.</p>
+                </div>
+                <div class="hacker-card p-6 rounded-2xl">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-4 border border-emerald-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2 code-font">Visual Kanvas PNG</h3>
+                    <p class="text-sm text-slate-600">Sandi Kotak, Sandi Rumput, QR Code & Barcode yang siap diunduh dalam bentuk berkas gambar PNG.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- VIEW 2: CODE SELECTION VIEW (PILIH KODE) -->
+        <section id="selectView" class="hidden space-y-8 py-6">
+            <div class="text-center max-w-3xl mx-auto space-y-3">
+                <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 code-font">
+                    Kamu mau ubah pesan menjadi kode apa?
+                </h2>
+                <p class="text-slate-600 text-sm sm:text-base">
+                    Pilih metode kriptografi atau enkoding di bawah ini untuk memulai membuat pesan rahasia.
+                </p>
+                <!-- Search Input Filter -->
+                <div class="pt-4 max-w-md mx-auto">
+                    <div class="relative">
+                        <input type="text" id="cipherSearchInput" oninput="filterCiphers()" placeholder="Cari jenis sandi (misal: Caesar, Morse, Hex)..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-emerald-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 text-sm shadow-sm code-font">
+                        <svg class="w-5 h-5 text-emerald-600 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categorized Cipher Grid -->
+            <div id="categoriesContainer" class="space-y-10">
+                <!-- Injected via JavaScript -->
+            </div>
+        </section>
+
+
+        <!-- VIEW 3: TRANSLATOR / GENERATOR VIEW -->
+        <section id="translatorView" class="hidden space-y-6 py-4">
+            <!-- Navigation Breadcrumbs -->
+            <div class="flex items-center justify-between">
+                <button onclick="navigateTo('select')" class="inline-flex items-center space-x-2 text-sm text-emerald-700 hover:text-emerald-900 transition-colors font-mono font-bold">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    <span>&lt; Kembali ke Pilih Kode</span>
+                </button>
+                <button onclick="navigateTo('hero')" class="inline-flex items-center space-x-1.5 text-xs text-slate-500 hover:text-slate-900 font-mono">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 001 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    <span>Beranda</span>
+                </button>
+            </div>
+
+            <!-- Cipher Banner Header -->
+            <div class="hacker-card p-6 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-l-4 border-l-emerald-600">
+                <div class="flex items-center space-x-4">
+                    <div id="activeCipherIcon" class="p-3 bg-emerald-100 text-emerald-700 rounded-xl border border-emerald-300">
+                        <!-- Icon injected -->
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-3">
+                            <h2 id="activeCipherTitle" class="text-2xl font-extrabold text-slate-900 code-font">Sandi Caesar</h2>
+                            <span id="activeCipherCategory" class="px-2.5 py-0.5 rounded-full text-[10px] font-mono tracking-wider uppercase bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold">
+                                Kriptografi Abjad
+                            </span>
+                        </div>
+                        <p id="activeCipherDesc" class="text-sm text-slate-600 mt-1">Menggeser urutan abjad huruf sesuai nilai kunci pergeseran.</p>
+                    </div>
+                </div>
+
+                <!-- Mode Switcher Tabs -->
+                <div class="flex bg-slate-100 p-1.5 rounded-xl border border-emerald-200 w-full md:w-auto">
+                    <button id="modeEncodeBtn" onclick="setMode('encode')" class="flex-1 md:flex-none px-5 py-2 rounded-lg text-xs font-bold font-mono transition-all bg-emerald-600 text-white shadow">
+                        ENCODE (Pesan -&gt; Kode)
+                    </button>
+                    <button id="modeDecodeBtn" onclick="setMode('decode')" class="flex-1 md:flex-none px-5 py-2 rounded-lg text-xs font-bold font-mono text-slate-600 hover:text-slate-900 transition-all">
+                        DECODE (Kode -&gt; Pesan)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Specific Extra Controls (Caesar Shift Slider, Morse Sound Player) -->
+            <div id="cipherExtraControls" class="hidden hacker-card p-4 rounded-xl flex flex-wrap items-center justify-between gap-4">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Input / Output Dual Panel -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Input Panel -->
+                <div class="hacker-card p-5 rounded-2xl flex flex-col space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label id="inputLabel" for="inputTextArea" class="text-xs font-bold uppercase tracking-wider text-emerald-700 font-mono flex items-center space-x-1">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span>Input Pesan Plaintext</span>
+                        </label>
+                        <div class="flex items-center space-x-2">
+                            <span id="inputCharCount" class="text-[11px] font-mono text-slate-500">0 Karakter</span>
+                            <button onclick="clearInputText()" class="text-xs text-slate-500 hover:text-red-600 transition-colors px-2 py-0.5 rounded hover:bg-slate-100 font-mono">
+                                Bersihkan
+                            </button>
+                        </div>
+                    </div>
+                    <textarea id="inputTextArea" oninput="handleRealtimeConvert()" placeholder="Ketik atau tempel teks di sini..." class="w-full h-48 p-4 rounded-xl bg-slate-900 border border-slate-700 text-emerald-400 code-font text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 resize-none"></textarea>
+                </div>
+
+                <!-- Output Panel -->
+                <div class="hacker-card p-5 rounded-2xl flex flex-col space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label id="outputLabel" for="outputTextArea" class="text-xs font-bold uppercase tracking-wider text-emerald-800 font-mono flex items-center space-x-1">
+                            <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                            <span>Hasil Ciphertext / Kode</span>
+                        </label>
+                        <div class="flex items-center space-x-2">
+                            <span id="outputCharCount" class="text-[11px] font-mono text-slate-500">0 Karakter</span>
+                            <button onclick="copyOutputText()" class="text-xs text-emerald-800 hover:text-emerald-900 font-bold font-mono px-3 py-1 rounded bg-emerald-100 border border-emerald-300 transition-all flex items-center space-x-1 shadow-sm">
+                                <svg class="w-3.5 h-3.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                <span>Salin Kode</span>
+                            </button>
+                        </div>
+                    </div>
+                    <textarea id="outputTextArea" readonly placeholder="Hasil kode akan muncul di sini secara otomatis..." class="w-full h-48 p-4 rounded-xl bg-emerald-950 border border-emerald-800 text-emerald-300 code-font text-sm focus:outline-none resize-none"></textarea>
+                </div>
+            </div>
+
+            <!-- Visual Canvas Container (For Sandi Kotak, Sandi Rumput, QR Code, Barcode) -->
+            <div id="visualCanvasContainer" class="hidden hacker-card p-6 rounded-2xl space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-200 pb-3">
+                    <div>
+                        <h3 id="visualCanvasTitle" class="text-lg font-bold text-slate-900 code-font">Pratinjau Gambar Visual Kode</h3>
+                        <p class="text-xs text-slate-500">Representasi kanvas grafik resolusi tinggi.</p>
+                    </div>
+                    <button id="downloadCanvasBtn" onclick="downloadCanvasImage()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-mono font-bold text-xs flex items-center space-x-2 transition-all shadow-md">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>Unduh Gambar (PNG)</span>
+                    </button>
+                </div>
+                <div class="flex justify-center items-center p-6 bg-slate-900 rounded-xl border border-emerald-300 overflow-x-auto min-h-[160px]">
+                    <canvas id="visualCanvas" class="max-w-full rounded shadow-md"></canvas>
+                </div>
+            </div>
+
+            <!-- Brute Force Table Result (Caesar / ROT13 Decoding) -->
+            <div id="bruteForceContainer" class="hidden hacker-card p-6 rounded-2xl space-y-4">
+                <div class="flex items-center justify-between border-b border-emerald-200 pb-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 code-font">Analisis Brute Force (25 Iterasi Kunci)</h3>
+                        <p class="text-xs text-slate-500">Hasil pengujian semua kemungkinan kunci pergeseran K=1 hingga 25.</p>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-800 font-mono">
+                        <thead class="bg-emerald-100 text-emerald-900 uppercase border-b border-emerald-300">
+                            <tr>
+                                <th class="p-3 w-24">Kunci (k)</th>
+                                <th class="p-3">Hasil Teks Dekripsi (Plaintext)</th>
+                                <th class="p-3 w-24 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bruteForceTableBody" class="divide-y divide-emerald-100">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- Persistent Global Footer -->
+    <footer class="bg-white border-t border-emerald-200 py-6 px-4 text-center mt-12 z-10 relative">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-slate-600 space-y-3 sm:space-y-0">
+            <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="font-bold text-slate-800 code-font">SECRET YOUR MESSAGE Lab</span>
+            </div>
+            <div class="font-mono text-slate-700">
+                Copyright by <span class="text-emerald-700 font-black tracking-wider">masql</span>
+            </div>
+            <div class="text-slate-500 font-mono">
+                [ Build by Bayu Julianto & mr.Gem]
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- DATA STATE & CONFIGURATION ---
+        let currentView = 'hero';
+        let activeCipherId = 'caesar';
+        let currentMode = 'encode'; // 'encode' or 'decode'
+        let caesarShiftKey = 3;
+
+        // Cipher Definitions Data Array
+        const CIPHERS_DATA = [
+            // Kategori 1: Basis Angka & ASCII
+            {
+                id: 'hex',
+                name: 'Heksadesimal',
+                category: 'Basis Angka & ASCII',
+                desc: 'Representasi angka basis 16 (0-9, A-F) dari setiap kode karakter ASCII.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>',
+                supportsVisual: false
+            },
+            {
+                id: 'octal',
+                name: 'Basis 8 (Oktal)',
+                category: 'Basis Angka & ASCII',
+                desc: 'Sistem bilangan berbasis 8 dengan menggunakan digit angka 0 sampai 7.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M12 7h.01"/></svg>',
+                supportsVisual: false
+            },
+            {
+                id: 'decimal',
+                name: 'Desimal (ASCII)',
+                category: 'Basis Angka & ASCII',
+                desc: 'Mengubah karakter teks menjadi deretan nilai angka ASCII berbasis 10.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>',
+                supportsVisual: false
+            },
+            {
+                id: 'binary',
+                name: 'Biner (Basis 2)',
+                category: 'Basis Angka & ASCII',
+                desc: 'Sistem kode komputer berbasis 2 angka (0 dan 1) untuk setiap byte karakter.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>',
+                supportsVisual: false
+            },
+
+            // Kategori 2: Enkoding Data
+            {
+                id: 'base64',
+                name: 'Base64',
+                category: 'Enkoding Data',
+                desc: 'Format skema enkoding data biner ke teks bermuatan 64 karakter ASCII.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>',
+                supportsVisual: false
+            },
+            {
+                id: 'url',
+                name: 'URL Encoding',
+                category: 'Enkoding Data',
+                desc: 'Mengubah karakter khusus menjadi kode persen aman untuk alamat URL web.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>',
+                supportsVisual: false
+            },
+            {
+                id: 'html_entities',
+                name: 'Entitas HTML',
+                category: 'Enkoding Data',
+                desc: 'Format pengodean simbol khusus menjadi entitas nomor HTML (misal &#65;).',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>',
+                supportsVisual: false
+            },
+
+            // Kategori 3: Sandi Klasik & Pramuka
+            {
+                id: 'kotak',
+                name: 'Sandi Kotak',
+                category: 'Sandi Klasik & Pramuka',
+                desc: 'Sandi visual bertema Pramuka menggunakan simbol garis bidang kotak 3x3 dan silang X.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z M9 4v16 M15 4v16 M4 9h16 M4 15h16"/></svg>',
+                supportsVisual: true
+            },
+            {
+                id: 'morse',
+                name: 'Sandi Morse',
+                category: 'Sandi Klasik & Pramuka',
+                desc: 'Sandi representasi titik (.) dan garis (-) yang dilengkapi pemutar audio sinyal nada beep.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 000-7.072m-2.828 9.9a9 9 0 010-12.728M12 12h.01"/></svg>',
+                supportsVisual: false,
+                hasAudio: true
+            },
+            {
+                id: 'rumput',
+                name: 'Sandi Rumput',
+                category: 'Sandi Klasik & Pramuka',
+                desc: 'Sandi turunan Morse yang divisualisasikan menjadi guratan rumput pendek dan tinggi.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v16M19 3v16M12 3v16M3 21h18"/></svg>',
+                supportsVisual: true
+            },
+
+            // Kategori 4: Kriptografi Abjad
+            {
+                id: 'caesar',
+                name: 'Sandi Caesar',
+                category: 'Kriptografi Abjad',
+                desc: 'Algoritma pergeseran alfabet dengan kunci pergeseran K (1-25) yang dapat disesuaikan.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>',
+                supportsVisual: false,
+                hasShift: true
+            },
+            {
+                id: 'rot13',
+                name: 'ROT13',
+                category: 'Kriptografi Abjad',
+                desc: 'Kasus khusus Sandi Caesar dengan pergeseran 13 langkah abjad (simetris).',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>',
+                supportsVisual: false
+            },
+            {
+                id: 'atbash',
+                name: 'Sandi Atbash (Cermin)',
+                category: 'Kriptografi Abjad',
+                desc: 'Sandi cermin abjad kuno di mana A dipetakan ke Z, B ke Y, C ke X, dan seterusnya.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>',
+                supportsVisual: false
+            },
+
+            // Kategori 5: Representasi Visual Mesin
+            {
+                id: 'qrcode',
+                name: 'QR Code Generator',
+                category: 'Representasi Visual Mesin',
+                desc: 'Menghasilkan matriks kode QR 2D yang dapat dipindai oleh kamera smartphone.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>',
+                supportsVisual: true
+            },
+            {
+                id: 'barcode',
+                name: 'Barcode (Code 128)',
+                category: 'Representasi Visual Mesin',
+                desc: 'Mengubah teks pesan menjadi batang garis Barcode standar industri Code 128.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h2v16H3V4zm4 0h1v16H7V4zm3 0h3v16h-3V4zm5 0h1v16h-1V4zm3 0h2v16h-2V4z"/></svg>',
+                supportsVisual: true
+            }
+        ];
+
+        // Morse Dictionary
+        const MORSE_MAP = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+            'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+            'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+            'Y': '-.--', 'Z': '--..',
+            '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....',
+            '6': '-....', '7': '--...', '8': '---..', '9': '----.', '0': '-----',
+            ' ': '/'
+        };
+        const REVERSE_MORSE_MAP = Object.fromEntries(Object.entries(MORSE_MAP).map(([k, v]) => [v, k]));
+
+        // Sandi Kotak Layout
+        const KOTAK_MAP = {
+            'A': { type: 'grid', r: 0, c: 0, dot: false }, 'B': { type: 'grid', r: 0, c: 0, dot: true },
+            'C': { type: 'grid', r: 0, c: 1, dot: false }, 'D': { type: 'grid', r: 0, c: 1, dot: true },
+            'E': { type: 'grid', r: 0, c: 2, dot: false }, 'F': { type: 'grid', r: 0, c: 2, dot: true },
+            'G': { type: 'grid', r: 1, c: 0, dot: false }, 'H': { type: 'grid', r: 1, c: 0, dot: true },
+            'I': { type: 'grid', r: 1, c: 1, dot: false }, 'J': { type: 'grid', r: 1, c: 1, dot: true },
+            'K': { type: 'grid', r: 1, c: 2, dot: false }, 'L': { type: 'grid', r: 1, c: 2, dot: true },
+            'M': { type: 'grid', r: 2, c: 0, dot: false }, 'N': { type: 'grid', r: 2, c: 0, dot: true },
+            'O': { type: 'grid', r: 2, c: 1, dot: false }, 'P': { type: 'grid', r: 2, c: 1, dot: true },
+            'Q': { type: 'grid', r: 2, c: 2, dot: false }, 'R': { type: 'grid', r: 2, c: 2, dot: true },
+            'S': { type: 'cross', sec: 0, dot: false }, 'T': { type: 'cross', sec: 0, dot: true },
+            'U': { type: 'cross', sec: 1, dot: false }, 'V': { type: 'cross', sec: 1, dot: true },
+            'W': { type: 'cross', sec: 2, dot: false }, 'X': { type: 'cross', sec: 2, dot: true },
+            'Y': { type: 'cross', sec: 3, dot: false }, 'Z': { type: 'cross', sec: 3, dot: true }
+        };
+
+        // --- HACKER SCRAMBLE TEXT ANIMATION ---
+        const targetTitle = "SECRET YOUR MESSAGE";
+        const scrambleChars = "01#X$@&%!?*<>_#/[]{}";
+        let scrambleInterval = null;
+
+        function startScrambleAnimation() {
+            const el = document.getElementById('scrambleHeader');
+            if (!el) return;
+            let iteration = 0;
+            clearInterval(scrambleInterval);
+
+            scrambleInterval = setInterval(() => {
+                el.innerText = targetTitle
+                    .split("")
+                    .map((char, index) => {
+                        if (index < iteration) {
+                            return targetTitle[index];
+                        }
+                        if (char === " ") return " ";
+                        return scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+                    })
+                    .join("");
+
+                if (iteration >= targetTitle.length) {
+                    clearInterval(scrambleInterval);
+                }
+                iteration += 1 / 2;
+            }, 30);
+        }
+
+        // --- LIGHT MATRIX CODE RAIN ANIMATION (WHITE-GREEN THEME) ---
+        function initMatrixRain() {
+            const canvas = document.getElementById('matrixCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            function resizeCanvas() {
+                canvas.width = canvas.parentElement.offsetWidth;
+                canvas.height = canvas.parentElement.offsetHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            const chars = '0123456789ABCDEFGHJKLMNOPQRSTUVWXYZ#$@&%<>*+';
+            const fontSize = 14;
+            const columns = Math.floor(canvas.width / fontSize);
+            const drops = Array(columns).fill(1);
+
+            function draw() {
+                // Soft fading light green background sweep
+                ctx.fillStyle = 'rgba(244, 251, 247, 0.12)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#059669'; // Hacker Emerald Green text
+                ctx.font = `${fontSize}px 'JetBrains Mono', monospace`;
+
+                for (let i = 0; i < drops.length; i++) {
+                    const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                    const x = i * fontSize;
+                    const y = drops[i] * fontSize;
+
+                    ctx.fillText(text, x, y);
+
+                    if (y > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+
+            setInterval(draw, 45);
+        }
+
+        // --- NAVIGATION ROUTER ---
+        function navigateTo(viewName) {
+            currentView = viewName;
+            document.getElementById('heroView').classList.add('hidden');
+            document.getElementById('selectView').classList.add('hidden');
+            document.getElementById('translatorView').classList.add('hidden');
+
+            if (viewName === 'hero') {
+                document.getElementById('heroView').classList.remove('hidden');
+                startScrambleAnimation();
+            } else if (viewName === 'select') {
+                document.getElementById('selectView').classList.remove('hidden');
+                renderSelectCards();
+            } else if (viewName === 'translator') {
+                document.getElementById('translatorView').classList.remove('hidden');
+                setupTranslatorView();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openCipher(cipherId) {
+            activeCipherId = cipherId;
+            currentMode = 'encode';
+            navigateTo('translator');
+        }
+
+        // --- RENDER SELECTION CARDS ---
+        function renderSelectCards(filterQuery = '') {
+            const container = document.getElementById('categoriesContainer');
+            container.innerHTML = '';
+
+            const categories = {};
+            CIPHERS_DATA.forEach(cipher => {
+                if (filterQuery) {
+                    const q = filterQuery.toLowerCase();
+                    const match = cipher.name.toLowerCase().includes(q) ||
+                                  cipher.category.toLowerCase().includes(q) ||
+                                  cipher.desc.toLowerCase().includes(q);
+                    if (!match) return;
+                }
+                if (!categories[cipher.category]) {
+                    categories[cipher.category] = [];
+                }
+                categories[cipher.category].push(cipher);
+            });
+
+            if (Object.keys(categories).length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-slate-500 font-mono">
+                        Tidak ada jenis sandi yang cocok dengan kata kunci "${filterQuery}".
+                    </div>
+                `;
+                return;
+            }
+
+            for (const [catName, ciphers] of Object.entries(categories)) {
+                const section = document.createElement('div');
+                section.className = 'space-y-4';
+                section.innerHTML = `
+                    <h3 class="text-lg font-bold text-emerald-800 flex items-center space-x-2 font-mono uppercase tracking-wider">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                        <span>${catName}</span>
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        ${ciphers.map(c => `
+                            <div onclick="openCipher('${c.id}')" class="hacker-card p-5 rounded-2xl cursor-pointer transition-all duration-300 flex flex-col justify-between group">
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <div class="p-2.5 bg-emerald-100 text-emerald-700 rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition-colors border border-emerald-300">
+                                            ${c.icon}
+                                        </div>
+                                        ${c.supportsVisual ? '<span class="px-2 py-0.5 text-[10px] font-mono bg-emerald-50 text-emerald-700 rounded border border-emerald-300 font-bold">Visual Canvas</span>' : ''}
+                                    </div>
+                                    <h4 class="text-lg font-bold text-slate-900 code-font group-hover:text-emerald-700 transition-colors">${c.name}</h4>
+                                    <p class="text-xs text-slate-600 leading-relaxed">${c.desc}</p>
+                                </div>
+                                <div class="pt-4 mt-2 flex items-center text-xs font-bold text-emerald-700 group-hover:text-emerald-800 space-x-1 font-mono">
+                                    <span>BUKA GENERATOR</span>
+                                    <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(section);
+            }
+        }
+
+        function filterCiphers() {
+            const query = document.getElementById('cipherSearchInput').value;
+            renderSelectCards(query);
+        }
+
+        // --- TRANSLATOR VIEW CONTROLLER ---
+        function setupTranslatorView() {
+            const cipher = CIPHERS_DATA.find(c => c.id === activeCipherId) || CIPHERS_DATA[0];
+
+            document.getElementById('activeCipherTitle').innerText = cipher.name;
+            document.getElementById('activeCipherCategory').innerText = cipher.category;
+            document.getElementById('activeCipherDesc').innerText = cipher.desc;
+            document.getElementById('activeCipherIcon').innerHTML = cipher.icon;
+
+            const extraCtrl = document.getElementById('cipherExtraControls');
+            extraCtrl.innerHTML = '';
+            let showExtra = false;
+
+            if (cipher.id === 'caesar') {
+                showExtra = true;
+                extraCtrl.innerHTML = `
+                    <div class="flex items-center space-x-4 w-full">
+                        <label class="text-xs font-bold text-emerald-800 font-mono whitespace-nowrap">KUNCI PERGESERAN (K = <span id="shiftValDisplay" class="text-emerald-900">${caesarShiftKey}</span>):</label>
+                        <input type="range" min="1" max="25" value="${caesarShiftKey}" oninput="updateCaesarShift(this.value)" class="w-full accent-emerald-600 cursor-pointer">
+                    </div>
+                `;
+            } else if (cipher.id === 'morse') {
+                showExtra = true;
+                extraCtrl.innerHTML = `
+                    <div class="flex items-center justify-between w-full">
+                        <span class="text-xs text-slate-600 font-mono">Putar sinyal nada audio dari hasil Sandi Morse:</span>
+                        <button onclick="playMorseAudioTone()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-mono font-bold text-xs flex items-center space-x-2 transition-all shadow">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            <span>PUTAR NADA AUDIO</span>
+                        </button>
+                    </div>
+                `;
+            }
+
+            if (showExtra) extraCtrl.classList.remove('hidden');
+            else extraCtrl.classList.add('hidden');
+
+            const canvasContainer = document.getElementById('visualCanvasContainer');
+            if (cipher.supportsVisual) {
+                canvasContainer.classList.remove('hidden');
+                document.getElementById('visualCanvasTitle').innerText = `Pratinjau Kanvas Gambar ${cipher.name}`;
+            } else {
+                canvasContainer.classList.add('hidden');
+            }
+
+            updateModeUI();
+            handleRealtimeConvert();
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            updateModeUI();
+            handleRealtimeConvert();
+        }
+
+        function updateModeUI() {
+            const encodeBtn = document.getElementById('modeEncodeBtn');
+            const decodeBtn = document.getElementById('modeDecodeBtn');
+            const inputLabel = document.getElementById('inputLabel');
+            const outputLabel = document.getElementById('outputLabel');
+
+            if (currentMode === 'encode') {
+                encodeBtn.className = "flex-1 md:flex-none px-5 py-2 rounded-lg text-xs font-bold font-mono transition-all bg-emerald-600 text-white shadow";
+                decodeBtn.className = "flex-1 md:flex-none px-5 py-2 rounded-lg text-xs font-bold font-mono text-slate-600 hover:text-slate-900 transition-all";
+                inputLabel.innerText = "Input Pesan Plaintext";
+                outputLabel.innerText = "Hasil Ciphertext / Kode";
+            } else {
+                decodeBtn.className = "flex-1 md:flex-none px-5 py-2 rounded-lg text-xs font-bold font-mono transition-all bg-emerald-600 text-white shadow";
+                encodeBtn.className = "flex-1 md:flex-none px-5 py-2 rounded-lg text-xs font-bold font-mono text-slate-600 hover:text-slate-900 transition-all";
+                inputLabel.innerText = "Input Ciphertext / Kode";
+                outputLabel.innerText = "Hasil Pesan Plaintext";
+            }
+        }
+
+        function updateCaesarShift(val) {
+            caesarShiftKey = parseInt(val) || 1;
+            document.getElementById('shiftValDisplay').innerText = caesarShiftKey;
+            handleRealtimeConvert();
+        }
+
+        // --- REALTIME CONVERSION CORE ROUTER ---
+        function handleRealtimeConvert() {
+            const inputStr = document.getElementById('inputTextArea').value;
+            const outputArea = document.getElementById('outputTextArea');
+            document.getElementById('inputCharCount').innerText = `${inputStr.length} Karakter`;
+
+            let resultStr = "";
+            const isEncode = currentMode === 'encode';
+
+            try {
+                switch (activeCipherId) {
+                    case 'hex':
+                        resultStr = isEncode ? textToHex(inputStr) : hexToText(inputStr);
+                        break;
+                    case 'octal':
+                        resultStr = isEncode ? textToOctal(inputStr) : octalToText(inputStr);
+                        break;
+                    case 'decimal':
+                        resultStr = isEncode ? textToDecimal(inputStr) : decimalToText(inputStr);
+                        break;
+                    case 'binary':
+                        resultStr = isEncode ? textToBinary(inputStr) : binaryToText(inputStr);
+                        break;
+                    case 'base64':
+                        resultStr = isEncode ? textToBase64(inputStr) : base64ToText(inputStr);
+                        break;
+                    case 'url':
+                        resultStr = isEncode ? encodeURIComponent(inputStr) : decodeURIComponent(inputStr);
+                        break;
+                    case 'html_entities':
+                        resultStr = isEncode ? textToHtmlEntities(inputStr) : htmlEntitiesToText(inputStr);
+                        break;
+                    case 'morse':
+                        resultStr = isEncode ? textToMorse(inputStr) : morseToText(inputStr);
+                        break;
+                    case 'rumput':
+                        resultStr = isEncode ? textToRumput(inputStr) : rumputToText(inputStr);
+                        if (isEncode) renderGrassCanvas(inputStr);
+                        break;
+                    case 'kotak':
+                        resultStr = isEncode ? textToKotakDesc(inputStr) : "Sandi Kotak mendukung enkoding visual langsung pada kanvas gambar di bawah.";
+                        if (isEncode) renderKotakCanvas(inputStr);
+                        break;
+                    case 'caesar':
+                        resultStr = caesarCipherProcess(inputStr, caesarShiftKey, isEncode);
+                        if (!isEncode) renderBruteForceTable(inputStr);
+                        break;
+                    case 'rot13':
+                        resultStr = caesarCipherProcess(inputStr, 13, isEncode);
+                        if (!isEncode) renderBruteForceTable(inputStr);
+                        break;
+                    case 'atbash':
+                        resultStr = atbashCipher(inputStr);
+                        break;
+                    case 'qrcode':
+                        resultStr = inputStr;
+                        renderQRCodeCanvas(inputStr);
+                        break;
+                    case 'barcode':
+                        resultStr = inputStr;
+                        renderBarcodeCanvas(inputStr);
+                        break;
+                    default:
+                        resultStr = inputStr;
+                }
+            } catch (err) {
+                resultStr = "[Error Format Input Tidak Valid]";
+            }
+
+            outputArea.value = resultStr;
+            document.getElementById('outputCharCount').innerText = `${resultStr.length} Karakter`;
+
+            const bfContainer = document.getElementById('bruteForceContainer');
+            if (!isEncode && (activeCipherId === 'caesar' || activeCipherId === 'rot13')) {
+                bfContainer.classList.remove('hidden');
+            } else {
+                bfContainer.classList.add('hidden');
+            }
+        }
+
+        // --- ALGORITHMS IMPLEMENTATION ---
+        function textToHex(str) {
+            return Array.from(str).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
+        }
+        function hexToText(hex) {
+            const clean = hex.trim().split(/\s+/);
+            return clean.map(h => String.fromCharCode(parseInt(h, 16))).filter(c => !isNaN(c.charCodeAt(0))).join('');
+        }
+
+        function textToOctal(str) {
+            return Array.from(str).map(c => c.charCodeAt(0).toString(8).padStart(3, '0')).join(' ');
+        }
+        function octalToText(oct) {
+            const clean = oct.trim().split(/\s+/);
+            return clean.map(o => String.fromCharCode(parseInt(o, 8))).filter(c => !isNaN(c.charCodeAt(0))).join('');
+        }
+
+        function textToDecimal(str) {
+            return Array.from(str).map(c => c.charCodeAt(0).toString(10)).join(' ');
+        }
+        function decimalToText(dec) {
+            const clean = dec.trim().split(/\s+/);
+            return clean.map(d => String.fromCharCode(parseInt(d, 10))).filter(c => !isNaN(c.charCodeAt(0))).join('');
+        }
+
+        function textToBinary(str) {
+            return Array.from(str).map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+        }
+        function binaryToText(bin) {
+            const clean = bin.trim().split(/\s+/);
+            return clean.map(b => String.fromCharCode(parseInt(b, 2))).filter(c => !isNaN(c.charCodeAt(0))).join('');
+        }
+
+        function textToBase64(str) {
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
+        }
+        function base64ToText(b64) {
+            return decodeURIComponent(atob(b64.trim()).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        }
+
+        function textToHtmlEntities(str) {
+            return Array.from(str).map(c => `&#${c.charCodeAt(0)};`).join('');
+        }
+        function htmlEntitiesToText(str) {
+            return str.replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec))
+                      .replace(/&#x([0-9a-fA-F]+);/g, (match, hex) => String.fromCharCode(parseInt(hex, 16)));
+        }
+
+        function textToMorse(str) {
+            return str.toUpperCase().split('').map(c => MORSE_MAP[c] || c).join(' ');
+        }
+        function morseToText(morse) {
+            const words = morse.trim().split(' / ');
+            return words.map(w => {
+                const letters = w.split(/\s+/);
+                return letters.map(l => REVERSE_MORSE_MAP[l] || l).join('');
+            }).join(' ');
+        }
+
+        function textToRumput(str) {
+            const morse = textToMorse(str);
+            return morse.replace(/\./g, 'n').replace(/-/g, 'M').replace(/\//g, '|');
+        }
+        function rumputToText(rumput) {
+            const morse = rumput.replace(/n/g, '.').replace(/M/g, '-').replace(/\|/g, '/');
+            return morseToText(morse);
+        }
+
+        function textToKotakDesc(str) {
+            return str.toUpperCase().split('').map(c => {
+                if (KOTAK_MAP[c]) {
+                    const info = KOTAK_MAP[c];
+                    const dotText = info.dot ? " (Dengan Titik)" : " (Tanpa Titik)";
+                    return info.type === 'grid' ? `[Kotak ${c}${dotText}]` : `[Silang ${c}${dotText}]`;
+                }
+                return c;
+            }).join(' ');
+        }
+
+        function caesarCipherProcess(str, shift, isEncode) {
+            const k = isEncode ? shift : (26 - (shift % 26)) % 26;
+            return str.split('').map(char => {
+                if (char.match(/[a-z]/i)) {
+                    const code = char.charCodeAt(0);
+                    const isUpper = code >= 65 && code <= 90;
+                    const base = isUpper ? 65 : 97;
+                    return String.fromCharCode(((code - base + k) % 26) + base);
+                }
+                return char;
+            }).join('');
+        }
+
+        function atbashCipher(str) {
+            return str.split('').map(char => {
+                if (char.match(/[a-z]/i)) {
+                    const code = char.charCodeAt(0);
+                    const isUpper = code >= 65 && code <= 90;
+                    const base = isUpper ? 65 : 97;
+                    return String.fromCharCode(base + (25 - (code - base)));
+                }
+                return char;
+            }).join('');
+        }
+
+        function renderBruteForceTable(ciphertext) {
+            const tbody = document.getElementById('bruteForceTableBody');
+            tbody.innerHTML = '';
+            if (!ciphertext.trim()) return;
+
+            for (let k = 1; k <= 25; k++) {
+                const plain = caesarCipherProcess(ciphertext, k, false);
+                const tr = document.createElement('tr');
+                tr.className = k === caesarShiftKey ? "bg-emerald-200 text-emerald-950 font-bold" : "hover:bg-emerald-50";
+                tr.innerHTML = `
+                    <td class="p-3">k = ${k}</td>
+                    <td class="p-3 code-font">${escapeHtml(plain)}</td>
+                    <td class="p-3 text-right">
+                        <button onclick="applyBruteForceChoice('${escapeHtml(plain)}', ${k})" class="px-2.5 py-1 text-[11px] bg-emerald-600 hover:bg-emerald-700 text-white rounded transition-all font-mono font-bold">Pilih</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function applyBruteForceChoice(plainText, key) {
+            caesarShiftKey = key;
+            const shiftCtrl = document.getElementById('shiftValDisplay');
+            if (shiftCtrl) shiftCtrl.innerText = key;
+            document.getElementById('outputTextArea').value = plainText;
+            showToast(`Kunci K = ${key} dipilih!`, 'success');
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // --- CANVAS RENDERERS (WHITE-GREEN THEME) ---
+
+        // 1. Sandi Kotak Canvas
+        function renderKotakCanvas(text) {
+            const canvas = document.getElementById('visualCanvas');
+            const ctx = canvas.getContext('2d');
+            const cleanText = text.toUpperCase().replace(/[^A-Z]/g, '');
+
+            if (cleanText.length === 0) {
+                canvas.width = 320;
+                canvas.height = 100;
+                ctx.fillStyle = "#0F172A";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#94A3B8";
+                ctx.font = "13px Inter";
+                ctx.textAlign = "center";
+                ctx.fillText("Masukkan teks huruf A-Z untuk melihat Sandi Kotak", 160, 55);
+                return;
+            }
+
+            const symbolSize = 45;
+            const padding = 15;
+            const cols = Math.min(cleanText.length, 10);
+            const rows = Math.ceil(cleanText.length / cols);
+
+            canvas.width = cols * (symbolSize + padding) + padding;
+            canvas.height = rows * (symbolSize + padding + 15) + padding;
+
+            ctx.fillStyle = "#0F172A";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            cleanText.split('').forEach((char, index) => {
+                const info = KOTAK_MAP[char];
+                if (!info) return;
+
+                const r = Math.floor(index / cols);
+                const c = index % cols;
+                const x = padding + c * (symbolSize + padding);
+                const y = padding + r * (symbolSize + padding + 15);
+
+                ctx.strokeStyle = "#00E676"; // Neon Green
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+
+                if (info.type === 'grid') {
+                    const row = info.r;
+                    const col = info.c;
+                    if (row > 0) { ctx.moveTo(x, y); ctx.lineTo(x + symbolSize, y); }
+                    if (row < 2) { ctx.moveTo(x, y + symbolSize); ctx.lineTo(x + symbolSize, y + symbolSize); }
+                    if (col > 0) { ctx.moveTo(x, y); ctx.lineTo(x, y + symbolSize); }
+                    if (col < 2) { ctx.moveTo(x + symbolSize, y); ctx.lineTo(x + symbolSize, y + symbolSize); }
+                } else {
+                    const half = symbolSize / 2;
+                    const cx = x + half;
+                    const cy = y + half;
+                    if (info.sec === 0) { ctx.moveTo(x, y); ctx.lineTo(cx, cy); ctx.lineTo(x + symbolSize, y); }
+                    else if (info.sec === 1) { ctx.moveTo(x + symbolSize, y); ctx.lineTo(cx, cy); ctx.lineTo(x + symbolSize, y + symbolSize); }
+                    else if (info.sec === 2) { ctx.moveTo(x, y + symbolSize); ctx.lineTo(cx, cy); ctx.lineTo(x + symbolSize, y + symbolSize); }
+                    else if (info.sec === 3) { ctx.moveTo(x, y); ctx.lineTo(cx, cy); ctx.lineTo(x, y + symbolSize); }
+                }
+                ctx.stroke();
+
+                if (info.dot) {
+                    ctx.fillStyle = "#34D399";
+                    ctx.beginPath();
+                    ctx.arc(x + symbolSize / 2, y + symbolSize / 2, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.fillStyle = "#94A3B8";
+                ctx.font = "11px 'JetBrains Mono'";
+                ctx.textAlign = "center";
+                ctx.fillText(char, x + symbolSize / 2, y + symbolSize + 12);
+            });
+        }
+
+        // 2. Sandi Rumput Canvas
+        function renderGrassCanvas(text) {
+            const canvas = document.getElementById('visualCanvas');
+            const ctx = canvas.getContext('2d');
+            const rumputStr = textToRumput(text);
+
+            canvas.width = Math.max(400, rumputStr.length * 18 + 40);
+            canvas.height = 140;
+
+            ctx.fillStyle = "#0F172A";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const groundY = 100;
+            ctx.strokeStyle = "#334155";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(10, groundY);
+            ctx.lineTo(canvas.width - 10, groundY);
+            ctx.stroke();
+
+            let curX = 20;
+            ctx.strokeStyle = "#00E676";
+            ctx.lineWidth = 3;
+
+            for (let i = 0; i < rumputStr.length; i++) {
+                const char = rumputStr[i];
+                if (char === 'n') {
+                    ctx.beginPath();
+                    ctx.moveTo(curX, groundY);
+                    ctx.lineTo(curX + 6, groundY - 25);
+                    ctx.lineTo(curX + 12, groundY);
+                    ctx.stroke();
+                    curX += 14;
+                } else if (char === 'M') {
+                    ctx.beginPath();
+                    ctx.moveTo(curX, groundY);
+                    ctx.lineTo(curX + 8, groundY - 50);
+                    ctx.lineTo(curX + 16, groundY);
+                    ctx.stroke();
+                    curX += 18;
+                } else if (char === '|') {
+                    ctx.strokeStyle = "#34D399";
+                    ctx.beginPath();
+                    ctx.moveTo(curX + 4, groundY - 5);
+                    ctx.lineTo(curX + 4, groundY + 5);
+                    ctx.stroke();
+                    ctx.strokeStyle = "#00E676";
+                    curX += 15;
+                } else {
+                    curX += 10;
+                }
+            }
+
+            ctx.fillStyle = "#94A3B8";
+            ctx.font = "12px Inter";
+            ctx.textAlign = "left";
+            ctx.fillText("Visualisasi Sandi Rumput Pramuka (Pendek = Titik, Tinggi = Garis)", 20, 125);
+        }
+
+        // 3. QR Code Canvas
+        function renderQRCodeCanvas(text) {
+            const canvas = document.getElementById('visualCanvas');
+            const ctx = canvas.getContext('2d');
+            const size = 220;
+            canvas.width = size;
+            canvas.height = size;
+
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(0, 0, size, size);
+
+            if (!text.trim()) {
+                ctx.fillStyle = "#0F172A";
+                ctx.font = "12px Inter";
+                ctx.textAlign = "center";
+                ctx.fillText("Ketik teks untuk membuat QR Code", size / 2, size / 2);
+                return;
+            }
+
+            const modules = 25;
+            const cellSize = size / modules;
+            ctx.fillStyle = "#022C22";
+
+            let hash = 0;
+            for (let i = 0; i < text.length; i++) hash = (hash << 5) - hash + text.charCodeAt(i);
+
+            for (let r = 0; r < modules; r++) {
+                for (let c = 0; c < modules; c++) {
+                    const isFinder = (r < 7 && c < 7) || (r < 7 && c >= modules - 7) || (r >= modules - 7 && c < 7);
+                    if (isFinder) {
+                        const isOuter = r === 0 || r === 6 || c === 0 || c === 6 ||
+                                        (r < 7 && (c === modules - 7 || c === modules - 1)) ||
+                                        (r === modules - 7 || r === modules - 1) ||
+                                        (r >= modules - 7 && (c === 0 || c === 6));
+                        const isInner = (r >= 2 && r <= 4 && c >= 2 && c <= 4) ||
+                                        (r >= 2 && r <= 4 && c >= modules - 5 && c <= modules - 3) ||
+                                        (r >= modules - 5 && r <= modules - 3 && c >= 2 && c <= 4);
+                        if (isOuter || isInner) {
+                            ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+                        }
+                    } else {
+                        const val = Math.abs(Math.sin(hash + r * 31 + c * 17));
+                        if (val > 0.45) {
+                            ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 4. Barcode Code 128 Canvas
+        function renderBarcodeCanvas(text) {
+            const canvas = document.getElementById('visualCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = 360;
+            const height = 120;
+            canvas.width = width;
+            canvas.height = height;
+
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(0, 0, width, height);
+
+            if (!text.trim()) {
+                ctx.fillStyle = "#0F172A";
+                ctx.font = "12px Inter";
+                ctx.textAlign = "center";
+                ctx.fillText("Ketik teks untuk membuat Barcode", width / 2, height / 2);
+                return;
+            }
+
+            const padding = 20;
+            let curX = padding;
+            const barHeight = 65;
+
+            ctx.fillStyle = "#022C22";
+            for (let i = 0; i < text.length; i++) {
+                const code = text.charCodeAt(i);
+                const pattern = (code * 13 + i * 7).toString(2).padStart(8, '1');
+                for (let b = 0; b < pattern.length; b++) {
+                    const w = pattern[b] === '1' ? 2 : 1;
+                    if (b % 2 === 0) {
+                        ctx.fillRect(curX, 15, w, barHeight);
+                    }
+                    curX += w + 1;
+                    if (curX > width - padding) break;
+                }
+            }
+
+            ctx.fillStyle = "#0F172A";
+            ctx.font = "12px 'JetBrains Mono'";
+            ctx.textAlign = "center";
+            ctx.fillText(text.substring(0, 30), width / 2, 100);
+        }
+
+        // --- WEB AUDIO API MORSE PLAYER ---
+        function playMorseAudioTone() {
+            const morseStr = document.getElementById('outputTextArea').value;
+            if (!morseStr.trim() || activeCipherId !== 'morse') {
+                showToast("Tidak ada kode Morse untuk diputar!", "error");
+                return;
+            }
+
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const audioCtx = new AudioContext();
+
+                let time = audioCtx.currentTime + 0.1;
+                const unit = 0.08;
+
+                for (let i = 0; i < morseStr.length; i++) {
+                    const char = morseStr[i];
+                    if (char === '.') {
+                        playTone(audioCtx, time, unit);
+                        time += unit + unit;
+                    } else if (char === '-') {
+                        playTone(audioCtx, time, unit * 3);
+                        time += unit * 3 + unit;
+                    } else if (char === ' ') {
+                        time += unit * 2;
+                    } else if (char === '/') {
+                        time += unit * 4;
+                    }
+                }
+                showToast("Memutar audio sinyal nada Morse...", "info");
+            } catch (e) {
+                showToast("Browser tidak mendukung Web Audio API.", "error");
+            }
+        }
+
+        function playTone(ctx, startTime, duration) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(650, startTime);
+
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(0.4, startTime + 0.005);
+            gain.gain.setValueAtTime(0.4, startTime + duration - 0.005);
+            gain.gain.linearRampToValueAtTime(0, startTime + duration);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(startTime);
+            osc.stop(startTime + duration);
+        }
+
+        // --- ACTIONS ---
+        function clearInputText() {
+            document.getElementById('inputTextArea').value = '';
+            handleRealtimeConvert();
+            showToast("Teks berhasil dibersihkan.", "info");
+        }
+
+        function copyOutputText() {
+            const outputArea = document.getElementById('outputTextArea');
+            if (!outputArea.value.trim()) {
+                showToast("Tidak ada teks untuk disalin!", "error");
+                return;
+            }
+
+            outputArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Berhasil disalin ke papan klip!", "success");
+            } catch (err) {
+                showToast("Gagal menyalin teks.", "error");
+            }
+        }
+
+        function downloadCanvasImage() {
+            const canvas = document.getElementById('visualCanvas');
+            const link = document.createElement('a');
+            link.download = `SECRET-MESSAGE-${activeCipherId}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast("Gambar kanvas berhasil diunduh!", "success");
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+
+            let typeStyles = "bg-white border-emerald-500 text-emerald-900";
+            if (type === 'error') typeStyles = "bg-white border-red-500 text-red-900";
+            if (type === 'success') typeStyles = "bg-white border-emerald-600 text-emerald-950 font-bold";
+
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl border ${typeStyles} shadow-xl flex items-center space-x-2 text-xs font-mono font-bold transform transition-all duration-300 translate-y-2 opacity-0`;
+            toast.innerHTML = `
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // INITIALIZE ON LOAD
+        window.addEventListener('DOMContentLoaded', () => {
+            renderSelectCards();
+            initMatrixRain();
+            navigateTo('hero');
+        });
+    </script>
+</body>
+</html>
